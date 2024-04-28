@@ -1,37 +1,37 @@
-
-import { useEffect, useReducer } from 'react'
-import './App.css'
-import ProductsService from './services/productsService'
-import { INITIAL_STATE, productsReducer } from './store/productsReducer'
+import { useDispatch } from "react-redux";
+import "./App.css";
+import { handleAllProductAction, handleSingleProductAction } from "./store/productSlice";
+import ShowInfo from "./components/ShowInfo";
+import { NavLink, Outlet } from "react-router-dom";
+import React, { useEffect } from 'react';
 
 function App() {
+  const dispatch = useDispatch();
 
-  const [state,dispach] = useReducer(productsReducer,INITIAL_STATE)
+  useEffect(()=>{
+    dispatch(handleSingleProductAction({
+      title:'Tihomir je car',
+      desc:'Bingo Redux',
+      price:'$9999'
+    }))
+  },[])
 
-
- 
-  function handleData(){
-      //fetch start
-      dispach({type:'FETCH_START'})
-      ProductsService.getAllProducts()
-      .then(res=>dispach({type:'FETCH_SUCCESS',data: res.data.products}))
-      .catch(err=>dispach({type:'FETCH_ERROR'}))
+  function handleInfo() {
+    dispatch(handleAllProductAction("Tihomit je ovde"));
   }
-if(state.error){
-  return <h2>Imas gresku</h2>
-}
+
   return (
-    <>
-     <button onClick={handleData}>Fetch Data</button>
+    <div className="flex flex-col items-center justify-between">
+      <h1 className="">REDUX TOOLKIT</h1>
+      
+      <ul>
+        <li><NavLink to={'/'}>Home</NavLink></li>
+        <li><NavLink to={'/products'}>Products</NavLink></li>
+      </ul>
 
-     {state.isLoading?(<h2>Loading....</h2>):(<>{state.products.map((el,i)=>{
-      return <div key={i}>
-        <h2>{el.title}</h2>
-        <img src={el.thumbnail} alt="" />
-      </div>
-     })}</>)}
-    </>
-  )
+     <Outlet />
+    </div>
+  );
 }
 
-export default App
+export default App;
